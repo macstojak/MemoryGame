@@ -17,7 +17,7 @@ module.exports = class Player{
             return this.board.map(row=>row.filter(el=>el.checked===false));
         }
     }
-    searchForTile(tile){
+    searchForSecondTile(tile){
         let result=[];
         // this.board.map(row=>row.filter(t=>t.symbol===tile.symbol));
         for(let row in this.board){
@@ -30,10 +30,12 @@ module.exports = class Player{
         return result;
     }
     setTheTile(tile){
-        let searchedTile = this.searchForTile(tile);
+        let searchedTile = this.searchForSecondTile(tile);
         if(searchedTile.length===0){
             tile.checked=true;
             this.board[tile.x][tile.y] = tile;
+        }else{
+            this.solutions.push({tile,searchedTile})
         }
     }
 

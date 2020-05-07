@@ -22,7 +22,6 @@ module.exports = class Board{
                 this.solution[i][j] = 0;
                 }
             }
-   
     }
 
     fillBoard(){
@@ -58,14 +57,28 @@ module.exports = class Board{
         //wylosuj najpierw jeden klocek i sprawdź ze swoją tablicą, czy jest podobny, a później drugi 
         //jeśli oba się zgadzają to przekaż reszcie dwa wylosowane klocki do ich tablic
         let msg="";
+        let rowNum=0;
+        //niepuste okienka gracza
         let playerBoard = player.getNonCheckedTiles();
+        //warunek na sprawdzenie czy jest to ostatni kafelek
+        let leftPlayerTile = utils.checkLastElementInMultiArray(playerBoard);
+
         let nonEmptyBoard = this.board.map(row=>row.filter(el=>el.checked===false));
-        if(playerBoard.every(e=>e===0)){
-            console.log("Player", player.id, "has won with revealed tiles:", player.solutions)
-            console.log("Player board:");
-            console.table(player.board);
+       //pierwszy warunek: sprawdź czy jest to ostatni pojedyńczy kafelek do odgadnięcia
+        if(Number.isNaN(leftPlayerTile)){
+            player.setTheTile(leftPlayerTile);
+            console.log("Player", player.id, "revealed last tile", leftPlayerTile);
         }
+        //drugi warunek: czy nie ma już więcej kafelków do odgadnięcia
+        else if(playerBoard.every(e=>e.length===0)){
+            console.log("Player", player.id, "has first revealed all the tiles:");
+            player.solutions.forEach(s=>console.log(JSON.stringify(s)));
+            console.log("Player board:");
+            player.board.forEach(row=>console.log(row))
+        }
+        //podstawowe działanie  
         else{
+
             let x1=this.getRandomX(nonEmptyBoard[0].length);
             let y1=this.getRandomY(nonEmptyBoard.length);
             let tile1 = this.solution[x1][y1];
@@ -84,10 +97,10 @@ module.exports = class Board{
                 this.revealTwoCorrectTiles(tile1, tile2);
                 player.writeTheSolution({tile1, tile2});
             }
+            console.log(msg);
         }
-        
-        console.log(msg);
     }
+
     revealTwoCorrectTiles(tile1, tile2){
             this.players.forEach(player=>{
                 player.board.filter(el=>{
@@ -110,8 +123,8 @@ module.exports = class Board{
             this.players.push(player);
             player.board = this.board;
         }
-        
     }
+
     checkIfBoardIsEmpty(){
         let result = [];
         for(let row of this.board){
@@ -121,7 +134,6 @@ module.exports = class Board{
                 }
             }
         }
-       
       return result.length===0?true:false;
     }
 }
